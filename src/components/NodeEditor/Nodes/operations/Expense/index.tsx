@@ -1,0 +1,10 @@
+import React from 'react';
+import type { NodeProps } from '@xyflow/react';
+import type { WidgetFlowNode } from '../../../workflow/types';
+import WidgetNode from '../../common/WidgetNode';
+
+const ExpenseNode: React.FC<NodeProps<WidgetFlowNode>> = (props) => (
+  <WidgetNode {...props} />
+);
+
+export default ExpenseNode;

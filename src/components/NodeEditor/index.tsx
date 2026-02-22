@@ -22,11 +22,24 @@ import '@xyflow/react/dist/style.css';
 import BottomToolbar from './BottomToolbar';
 import NodeInspector from './NodeInspector';
 import NodeLibrary from './NodeLibrary';
-import ChildTableNode from './Nodes/ChildTableNode';
-import ParentTableNode from './Nodes/ParentTableNode';
-import StartNode from './Nodes/StartNode';
-import WidgetNode from './Nodes/WidgetNode';
 import TopBar from './TopBar';
+
+// Node components - organized by category
+import StartNode from './Nodes/StartNode/StartNode';
+// Tables
+import ParentTableNode from './Nodes/tables/ParentTableNode/ParentTableNode';
+import ChildTableNode from './Nodes/tables/ChildTableNode/ChildTableNode';
+// Charts
+import VerticalBarChartNode from './Nodes/charts/VerticalBarChart';
+import HorizontalBarChartNode from './Nodes/charts/HorizontalBarChart';
+import PieChartNode from './Nodes/charts/PieChart';
+import TrendLineNode from './Nodes/charts/TrendLine';
+// Operations
+import CalculateNode from './Nodes/operations/Calculate';
+import FilterNode from './Nodes/operations/Filter';
+import IncomeNode from './Nodes/operations/Income';
+import ExpenseNode from './Nodes/operations/Expense';
+import BalanceNode from './Nodes/operations/Balance';
 import './NodeEditor.css';
 import { cloneWorkflowGraph } from './workflow/graphUtils';
 import { createEmptyWorkflowGraph, createNodeFromLibrary } from './workflow/factories';
@@ -34,6 +47,10 @@ import {
   addParentRowAndChildTable,
   deleteParentRowAndChildTable,
   renameParentRowAndChildTable,
+  updateParentTableCell,
+  addParentTableColumn,
+  updateParentTableColumn,
+  deleteParentTableColumn,
 } from './workflow/parentTableOperations';
 import { workflowDirectoryItems } from './workflow/templates';
 import type {
@@ -48,17 +65,15 @@ const nodeTypes = {
   start: StartNode,
   parentTable: ParentTableNode,
   childTable: ChildTableNode,
-  transactionTable: WidgetNode,
-  budgetTable: WidgetNode,
-  verticalBarChart: WidgetNode,
-  horizontalBarChart: WidgetNode,
-  pieChart: WidgetNode,
-  trendLine: WidgetNode,
-  calculate: WidgetNode,
-  filter: WidgetNode,
-  income: WidgetNode,
-  expense: WidgetNode,
-  balance: WidgetNode,
+  verticalBarChart: VerticalBarChartNode,
+  horizontalBarChart: HorizontalBarChartNode,
+  pieChart: PieChartNode,
+  trendLine: TrendLineNode,
+  calculate: CalculateNode,
+  filter: FilterNode,
+  income: IncomeNode,
+  expense: ExpenseNode,
+  balance: BalanceNode,
 };
 
 const HISTORY_LIMIT = 80;
@@ -234,6 +249,60 @@ const NodeEditor: React.FC = () => {
   const suppressContextMenuUntilRef = useRef(0);
   const pasteCountRef = useRef(0);
 
+  const canStartTwoButtonPan = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return false;
+    if (!target.closest('.react-flow')) return false;
+    if (target.closest('.ne-node-library, .ne-node-inspector, .ne-code-panel, .ne-canvas-context-menu')) {
+      return false;
+    }
+    if (target.closest('.react-flow__handle')) return false;
+    return Boolean(target.closest('.react-flow__pane, .react-flow__node'));
+  };
+
+  const beginTwoButtonPan = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (twoButtonPanRef.current) return;
+
+    const hasLeft = (event.buttons & 1) === 1;
+    const hasRight = (event.buttons & 2) === 2;
+    if (!(hasLeft && hasRight)) return;
+    if (!canStartTwoButtonPan(event.target)) return;
+
+    twoButtonPanRef.current = { lastX: event.clientX, lastY: event.clientY };
+    dragSnapshotRef.current = null;
+    suppressContextMenuUntilRef.current = Date.now() + 220;
+    setIsTwoButtonPanning(true);
+    canvasShellRef.current?.classList.add('is-two-button-panning');
+    setContextMenu(null);
+    setShowInspectorPanel(false);
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const shouldBlockSelectionDragStart = (target: EventTarget | null, buttons: number) => {
+    if (!(target instanceof HTMLElement)) return false;
+    if (!target.closest('.react-flow')) return false;
+    if (target.closest('.ne-node-library, .ne-node-inspector, .ne-code-panel, .ne-canvas-context-menu')) {
+      return false;
+    }
+    return Boolean(target.closest('.react-flow__pane')) && buttons !== 1;
+  };
+
+  const blockNonLeftSelectionPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const hasLeft = (event.buttons & 1) === 1;
+    if (hasLeft) return;
+    if (!shouldBlockSelectionDragStart(event.target, event.buttons)) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const handleCanvasMouseDownCapture = (event: React.MouseEvent<HTMLDivElement>) => {
+    beginTwoButtonPan(event);
+    if (event.defaultPrevented) return;
+    if (!shouldBlockSelectionDragStart(event.target, event.buttons)) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   useEffect(() => {
     return () => {
       if (evaluateTimerRef.current) {
@@ -243,6 +312,16 @@ const NodeEditor: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const endTwoButtonPan = () => {
+      const wasPanning = twoButtonPanRef.current !== null;
+      twoButtonPanRef.current = null;
+      setIsTwoButtonPanning(false);
+      canvasShellRef.current?.classList.remove('is-two-button-panning');
+      if (wasPanning) {
+        suppressContextMenuUntilRef.current = Math.max(suppressContextMenuUntilRef.current, Date.now() + 220);
+      }
+    };
+
     const onPointerMove = (event: PointerEvent) => {
       const offset = libraryDragOffsetRef.current;
       if (offset) {
@@ -272,9 +351,7 @@ const NodeEditor: React.FC = () => {
         const hasLeft = (event.buttons & 1) === 1;
         const hasRight = (event.buttons & 2) === 2;
         if (!(hasLeft && hasRight)) {
-          twoButtonPanRef.current = null;
-          setIsTwoButtonPanning(false);
-          canvasShellRef.current?.classList.remove('is-two-button-panning');
+          endTwoButtonPan();
         } else {
           const deltaX = event.clientX - panState.lastX;
           const deltaY = event.clientY - panState.lastY;
@@ -287,7 +364,7 @@ const NodeEditor: React.FC = () => {
               x: viewport.x + deltaX,
               y: viewport.y + deltaY,
             });
-            suppressContextMenuUntilRef.current = Date.now() + 160;
+            suppressContextMenuUntilRef.current = Date.now() + 180;
           }
         }
       }
@@ -295,16 +372,16 @@ const NodeEditor: React.FC = () => {
 
     const onPointerUp = () => {
       libraryDragOffsetRef.current = null;
-      twoButtonPanRef.current = null;
-      setIsTwoButtonPanning(false);
-      canvasShellRef.current?.classList.remove('is-two-button-panning');
+      endTwoButtonPan();
     };
 
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
     return () => {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
     };
   }, [reactFlowInstance]);
 
@@ -351,6 +428,18 @@ const NodeEditor: React.FC = () => {
       },
       onDeleteRow: (parentNodeId, rowId) => {
         commitGraph((current) => deleteParentRowAndChildTable(current, parentNodeId, rowId));
+      },
+      onUpdateCell: (parentNodeId, rowId, columnId, value) => {
+        setGraph((current) => updateParentTableCell(current, parentNodeId, rowId, columnId, value));
+      },
+      onAddColumn: (parentNodeId, column) => {
+        setGraph((current) => addParentTableColumn(current, parentNodeId, column));
+      },
+      onUpdateColumn: (parentNodeId, columnId, updates) => {
+        setGraph((current) => updateParentTableColumn(current, parentNodeId, columnId, updates));
+      },
+      onDeleteColumn: (parentNodeId, columnId) => {
+        commitGraph((current) => deleteParentTableColumn(current, parentNodeId, columnId));
       },
     };
 
@@ -848,24 +937,8 @@ const NodeEditor: React.FC = () => {
             <div
               className="ne-canvas-shell"
               ref={canvasShellRef}
-              onPointerDownCapture={(event) => {
-                const target = event.target as HTMLElement | null;
-                if (!target?.closest('.react-flow')) return;
-                if (target.closest('.react-flow__node, .react-flow__handle, .ne-node-library, .ne-node-inspector, .ne-code-panel, .ne-canvas-context-menu')) {
-                  return;
-                }
-
-                if (event.buttons === 3) {
-                  twoButtonPanRef.current = { lastX: event.clientX, lastY: event.clientY };
-                  suppressContextMenuUntilRef.current = Date.now() + 160;
-                  setIsTwoButtonPanning(true);
-                  canvasShellRef.current?.classList.add('is-two-button-panning');
-                  setContextMenu(null);
-                  setShowInspectorPanel(false);
-                  event.preventDefault();
-                  event.stopPropagation();
-                }
-              }}
+              onPointerDownCapture={blockNonLeftSelectionPointerDown}
+              onMouseDownCapture={handleCanvasMouseDownCapture}
               onContextMenu={(event) => {
                 const target = event.target as HTMLElement | null;
                 if (!target) return;
@@ -916,8 +989,6 @@ const NodeEditor: React.FC = () => {
                   openCanvasContextMenu(event.clientX, event.clientY);
                 }}
                 nodeTypes={nodeTypes}
-                fitView={graph.nodes.length > 0}
-                fitViewOptions={{ padding: 0.2 }}
                 snapToGrid
                 snapGrid={[16, 16]}
                 connectionLineType={ConnectionLineType.Bezier}
@@ -982,7 +1053,12 @@ const NodeEditor: React.FC = () => {
               ) : null}
 
               <NodeLibrary
-                style={{ left: `${libraryPosition.x}px`, top: `${libraryPosition.y}px` }}
+                style={{
+                  left: `${libraryPosition.x}px`,
+                  top: `${libraryPosition.y}px`,
+                  right: 'auto',
+                  bottom: 'auto',
+                }}
                 onDragHandlePointerDown={handleLibraryDragHandlePointerDown}
                 onHome={() => {
                   setLibraryPosition({ x: 18, y: 18 });

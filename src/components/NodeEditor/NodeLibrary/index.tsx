@@ -1,12 +1,11 @@
 import React from 'react';
 import { nodeDefinitions, type NodeDefinition } from './nodeDefinitions';
 
-const categoryOrder: Array<NodeDefinition['category']> = ['tables', 'charts', 'operations', 'finance'];
+const categoryOrder: Array<NodeDefinition['category']> = ['tables', 'charts', 'operations'];
 const categoryLabels: Record<NodeDefinition['category'], string> = {
   tables: 'Tables',
   charts: 'Charts',
   operations: 'Operations',
-  finance: 'Finance',
 };
 
 interface NodeLibraryProps {

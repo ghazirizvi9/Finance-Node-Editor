@@ -230,6 +230,12 @@
   cursor: grabbing !important;
 }
 
+.ne-canvas-shell.is-two-button-panning .react-flow__selection,
+.ne-canvas-shell.is-two-button-panning .react-flow__nodesselection,
+.ne-canvas-shell.is-two-button-panning .react-flow__nodesselection-rect {
+  display: none !important;
+}
+
 .node-editor.theme-light .ne-canvas-shell {
   background: #edf2fa;
 }
@@ -1133,82 +1139,274 @@
   font-size: 12px;
 }
 
-.ne-parent-table-node .ne-node-card-shell { min-width: 390px; }
+/* ── Parent Table Node – spreadsheet layout ─────────────────────────────── */
 
-.ne-parent-table-grid {
-  border-radius: 16px;
+.ne-parent-table-node .ne-node-card-shell { min-width: 480px; }
+
+/* Scrollable table area */
+.ne-pt-scroll {
+  overflow-x: auto;
+  border-radius: 14px;
   border: 1px solid var(--border);
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  background: rgba(255,255,255,0.02);
+  margin-bottom: 8px;
+  max-height: 420px;
+  overflow-y: auto;
 }
 
-.ne-parent-table-head {
-  min-height: 30px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.ne-parent-empty {
-  grid-column: 1 / -1;
-  padding: 12px 10px;
-  color: var(--text-muted);
+.ne-pt-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 12px;
-  line-height: 1.35;
+  color: var(--text);
 }
 
-.ne-parent-row-cell,
-.ne-parent-row-link {
-  min-height: 40px;
-  padding: 5px 8px;
+/* TH / TD base */
+.ne-pt-th,
+.ne-pt-sub-th,
+.ne-pt-td,
+.ne-pt-footer-td {
+  padding: 0;
+  border: 1px solid var(--border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.ne-pt-th { background: rgba(255,255,255,0.04); }
+.ne-pt-sub-th { background: rgba(255,255,255,0.02); }
+
+/* Row-label column */
+.ne-pt-row-label-th,
+.ne-pt-row-label-td { min-width: 130px; max-width: 180px; }
+
+/* Add-column last column */
+.ne-pt-add-col-th {
+  width: 36px;
+  text-align: center;
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Column header cell content */
+.ne-pt-header-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 6px;
+}
+
+.ne-pt-col-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--border);
+  gap: 4px;
 }
 
-.ne-parent-table-grid > :nth-last-child(-n + 2) { border-bottom: none; }
+/* Editable column name input */
+.ne-pt-col-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 4px;
+  border-radius: 6px;
+}
 
-.ne-color-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
+.ne-pt-col-input:focus {
+  outline: none;
+  background: rgba(255,255,255,0.07);
+}
+
+/* Color swatch label */
+.ne-pt-color-swatch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
   flex-shrink: 0;
 }
 
-.ne-parent-row-input,
+.ne-pt-color-swatch span {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.ne-pt-color-swatch.small span {
+  width: 10px;
+  height: 10px;
+}
+
+.ne-pt-color-swatch input[type=color] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+}
+
+/* Delete (×) button */
+.ne-pt-del-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ne-pt-del-btn:hover { border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+/* Add column button */
+.ne-pt-add-col-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ne-pt-add-col-btn:hover { color: var(--text); border-color: currentColor; }
+
+/* Body rows */
+.ne-pt-data-row:hover { background: rgba(255,255,255,0.025); }
+
+.ne-pt-td { padding: 2px 4px; }
+
+/* Row name cell */
+.ne-pt-row-label-td {
+  display: table-cell !important;
+  gap: 0;
+}
+
+.ne-pt-row-label-td {
+  padding: 0 6px;
+}
+
+.ne-pt-row-label-td {
+  position: relative;
+}
+
+/* Use flex inside via :has / direct child layout trick */
+.ne-pt-row-label-td > * { vertical-align: middle; }
+
+.ne-color-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.ne-pt-row-name-input,
+.ne-pt-cell-input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text);
+  font-size: 12px;
+  padding: 5px 6px;
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+.ne-pt-row-name-input:focus,
+.ne-pt-cell-input:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Row actions cell */
+.ne-pt-row-actions-td { width: 32px; text-align: center; }
+
+/* Empty state */
+.ne-pt-empty {
+  padding: 14px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* Totals footer */
+.ne-pt-totals-row { border-top: 2px solid var(--border-strong); }
+
+.ne-pt-footer-td {
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-soft);
+  background: rgba(255,255,255,0.03);
+}
+
+/* Add row bar */
+.ne-parent-add-row {
+  margin-top: 2px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
 .ne-add-row-input {
   width: 100%;
   border-radius: 10px;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
   color: var(--text);
   font-size: 12px;
   padding: 7px 8px;
 }
 
-.ne-parent-row-input:focus,
 .ne-add-row-input:focus {
   outline: none;
   border-color: var(--border-strong);
   background: rgba(255,255,255,0.04);
 }
 
-.node-editor.theme-light .ne-parent-row-input:focus,
 .node-editor.theme-light .ne-add-row-input:focus {
   background: rgba(15,23,42,0.03);
 }
 
-.ne-parent-row-link { justify-content: space-between; }
+.ne-add-row-btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
+.ne-add-row-btn:hover {
+  border-color: var(--border-strong);
+  background: rgba(255,255,255,0.06);
+}
+
+/* Legacy shared utilities */
 .ne-link-pill {
   height: 24px;
   max-width: 170px;
@@ -1241,35 +1439,6 @@
 .ne-inline-icon-btn:hover {
   border-color: rgba(239,68,68,0.25);
   color: #fca5a5;
-}
-
-.ne-parent-add-row {
-  margin-top: 8px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-}
-
-.ne-add-row-input {
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-}
-
-.ne-add-row-btn {
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.03);
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.ne-add-row-btn:hover {
-  border-color: var(--border-strong);
-  background: rgba(255,255,255,0.05);
 }
 
 .ne-child-table-node .ne-node-card-shell,

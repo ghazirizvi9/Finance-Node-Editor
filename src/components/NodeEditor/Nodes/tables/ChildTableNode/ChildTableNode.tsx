@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import type { ChildTableFlowNode } from '../workflow/types';
+import type { ChildTableFlowNode } from '../../../workflow/types';
 
 const sampleRows = [
   ['Housing', '$0', '$0'],

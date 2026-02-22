@@ -7,8 +7,6 @@ export type FinanceNodeType =
   | 'start'
   | 'parentTable'
   | 'childTable'
-  | 'transactionTable'
-  | 'budgetTable'
   | 'verticalBarChart'
   | 'horizontalBarChart'
   | 'pieChart'
@@ -19,7 +17,15 @@ export type FinanceNodeType =
   | 'expense'
   | 'balance';
 
-export type LibraryCategory = 'tables' | 'charts' | 'operations' | 'finance';
+export type LibraryCategory = 'tables' | 'charts' | 'operations';
+
+export interface ColumnConfig {
+  id: string;
+  header: string;
+  subheader: string;
+  headerColor: string;
+  subheaderColor: string;
+}
 
 export interface ParentTableRow {
   id: string;
@@ -27,6 +33,8 @@ export interface ParentTableRow {
   childNodeId: string;
   headerColor: string;
   subheaderColor: string;
+  /** Column-keyed cell data */
+  cells: Record<string, string>;
 }
 
 export interface BaseFinanceNodeData extends Record<string, unknown> {
@@ -45,6 +53,7 @@ export interface StartNodeData extends BaseFinanceNodeData {
 
 export interface ParentTableNodeData extends BaseFinanceNodeData {
   kind: 'parentTable';
+  columns: ColumnConfig[];
   rows: ParentTableRow[];
 }
 
@@ -64,7 +73,7 @@ export interface WidgetNodeData extends BaseFinanceNodeData {
   widgetType: FinanceWidgetKind;
   category: LibraryCategory;
   metrics: string[];
-  previewKind?: 'table' | 'barV' | 'barH' | 'pie' | 'line' | 'operation' | 'finance';
+  previewKind?: 'table' | 'barV' | 'barH' | 'pie' | 'line' | 'operation';
   rowCount?: number;
   dataSource?: string;
 }
@@ -94,6 +103,10 @@ export interface ParentRowRuntimeActions {
   onAddRow: (parentNodeId: string, rowName: string) => void;
   onRenameRow: (parentNodeId: string, rowId: string, nextName: string) => void;
   onDeleteRow: (parentNodeId: string, rowId: string) => void;
+  onUpdateCell: (parentNodeId: string, rowId: string, columnId: string, value: string) => void;
+  onAddColumn: (parentNodeId: string, column: ColumnConfig) => void;
+  onUpdateColumn: (parentNodeId: string, columnId: string, updates: Partial<ColumnConfig>) => void;
+  onDeleteColumn: (parentNodeId: string, columnId: string) => void;
 }
 
 export type ParentTableNodeRuntimeData = ParentTableNodeData & Partial<ParentRowRuntimeActions>;

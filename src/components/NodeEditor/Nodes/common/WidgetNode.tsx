@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import type { WidgetFlowNode } from '../workflow/types';
+import type { WidgetFlowNode } from '../../workflow/types';
 
 const tablePreviewRows = [
   ['Groceries', '$420', 'Needs'],
@@ -15,7 +15,6 @@ const WidgetNode: React.FC<NodeProps<WidgetFlowNode>> = ({ data, selected }) => 
   const isBarV = previewKind === 'barV';
   const isBarH = previewKind === 'barH';
   const isLine = previewKind === 'line';
-  const isFinance = previewKind === 'finance';
   const isOperation = previewKind === 'operation';
 
   return (
@@ -113,19 +112,6 @@ const WidgetNode: React.FC<NodeProps<WidgetFlowNode>> = ({ data, selected }) => 
             <div className="ne-operation-preview">
               <div className="ne-operation-line">{data.metrics[0] ?? 'Configure operation'}</div>
               <div className="ne-widget-chip-list">
-                {data.metrics.slice(1).map((metric) => (
-                  <span key={metric} className="ne-metric-pill">{metric}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {isFinance && (
-            <div className="ne-finance-preview">
-              <div className="ne-finance-value" style={{ color: data.accentColor }}>
-                {data.metrics[0] ?? '$0'}
-              </div>
-              <div className="ne-finance-chips">
                 {data.metrics.slice(1).map((metric) => (
                   <span key={metric} className="ne-metric-pill">{metric}</span>
                 ))}

@@ -54,8 +54,6 @@ export function createStarterWorkflowGraph(): WorkflowGraph {
   graph = addParentRowAndChildTable(graph, parentNode.id, 'Groceries');
   graph = addParentRowAndChildTable(graph, parentNode.id, 'Travel');
 
-  const txTable = createWidgetNode('transactionTable', { x: 170, y: 520 });
-  const budgetTable = createWidgetNode('budgetTable', { x: 470, y: 520 });
   const income = createWidgetNode('income', { x: 870, y: 120 });
   const expense = createWidgetNode('expense', { x: 870, y: 340 });
   const balance = createWidgetNode('balance', { x: 1180, y: 230 });
@@ -64,19 +62,16 @@ export function createStarterWorkflowGraph(): WorkflowGraph {
   const filter = createWidgetNode('filter', { x: 770, y: 520 });
   const calculate = createWidgetNode('calculate', { x: 1480, y: 520 });
 
-  graph.nodes = [...graph.nodes, txTable, budgetTable, income, expense, balance, pie, trend, filter, calculate];
+  graph.nodes = [...graph.nodes, income, expense, balance, pie, trend, filter, calculate];
 
   const start = graph.nodes.find((node) => node.type === 'start');
   if (start) {
     graph.edges.push(connect(start.id, parentNode.id));
-    graph.edges.push(connect(start.id, txTable.id));
-    graph.edges.push(connect(start.id, budgetTable.id));
   }
 
-  graph.edges.push(connect(txTable.id, filter.id));
-  graph.edges.push(connect(budgetTable.id, parentNode.id));
   graph.edges.push(connect(parentNode.id, expense.id));
   graph.edges.push(connect(parentNode.id, pie.id));
+  graph.edges.push(connect(parentNode.id, filter.id));
   graph.edges.push(connect(income.id, balance.id));
   graph.edges.push(connect(expense.id, balance.id));
   graph.edges.push(connect(balance.id, trend.id));
