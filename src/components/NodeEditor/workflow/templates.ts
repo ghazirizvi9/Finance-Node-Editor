@@ -1,17 +1,4 @@
-import type { Edge } from '@xyflow/react';
-import { createBlankWorkflowGraph, createWidgetNode } from './factories';
-import { addParentRowAndChildTable } from './parentTableOperations';
-import type { WorkflowDirectoryItem, WorkflowGraph } from './types';
-
-function connect(source: string, target: string): Edge {
-  return {
-    id: `edge-${source}-${target}`,
-    source,
-    target,
-    type: 'bezier',
-    animated: false,
-  };
-}
+import type { WorkflowDirectoryItem } from './types';
 
 export const workflowDirectoryItems: WorkflowDirectoryItem[] = [
   {
@@ -43,40 +30,3 @@ export const workflowDirectoryItems: WorkflowDirectoryItem[] = [
     accentColor: '#14b8a6',
   },
 ];
-
-export function createStarterWorkflowGraph(): WorkflowGraph {
-  let graph = createBlankWorkflowGraph();
-
-  const parentNode = graph.nodes.find((node) => node.type === 'parentTable');
-  if (!parentNode) return graph;
-
-  graph = addParentRowAndChildTable(graph, parentNode.id, 'Housing');
-  graph = addParentRowAndChildTable(graph, parentNode.id, 'Groceries');
-  graph = addParentRowAndChildTable(graph, parentNode.id, 'Travel');
-
-  const income = createWidgetNode('income', { x: 870, y: 120 });
-  const expense = createWidgetNode('expense', { x: 870, y: 340 });
-  const balance = createWidgetNode('balance', { x: 1180, y: 230 });
-  const pie = createWidgetNode('pieChart', { x: 1180, y: 520 });
-  const trend = createWidgetNode('trendLine', { x: 1480, y: 230 });
-  const filter = createWidgetNode('filter', { x: 770, y: 520 });
-  const calculate = createWidgetNode('calculate', { x: 1480, y: 520 });
-
-  graph.nodes = [...graph.nodes, income, expense, balance, pie, trend, filter, calculate];
-
-  const start = graph.nodes.find((node) => node.type === 'start');
-  if (start) {
-    graph.edges.push(connect(start.id, parentNode.id));
-  }
-
-  graph.edges.push(connect(parentNode.id, expense.id));
-  graph.edges.push(connect(parentNode.id, pie.id));
-  graph.edges.push(connect(parentNode.id, filter.id));
-  graph.edges.push(connect(income.id, balance.id));
-  graph.edges.push(connect(expense.id, balance.id));
-  graph.edges.push(connect(balance.id, trend.id));
-  graph.edges.push(connect(filter.id, calculate.id));
-  graph.edges.push(connect(calculate.id, trend.id));
-
-  return graph;
-}

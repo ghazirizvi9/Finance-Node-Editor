@@ -9,6 +9,7 @@ interface BottomToolbarProps {
   onZoomOut: () => void;
   onZoomIn: () => void;
   onFitView: () => void;
+  onResetZoom: () => void;
   zoomLabel: string;
   theme: EditorTheme;
   onToggleTheme: () => void;
@@ -22,6 +23,7 @@ const BottomToolbar: React.FC<BottomToolbarProps> = ({
   onZoomOut,
   onZoomIn,
   onFitView,
+  onResetZoom,
   zoomLabel,
   theme,
   onToggleTheme,
@@ -37,6 +39,9 @@ const BottomToolbar: React.FC<BottomToolbarProps> = ({
         </button>
         <button type="button" className="ne-toolbar-btn" onClick={onZoomIn} title="Zoom in">
           +
+        </button>
+        <button type="button" className="ne-toolbar-btn" onClick={onResetZoom} title="Reset to 100%">
+          ⊙
         </button>
       </div>
 

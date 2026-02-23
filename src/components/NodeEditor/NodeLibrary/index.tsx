@@ -1,8 +1,8 @@
 import React from 'react';
-import { nodeDefinitions, type NodeDefinition } from './nodeDefinitions';
+import { widgetDefinitions, type WidgetDefinition } from './nodeDefinitions';
 
-const categoryOrder: Array<NodeDefinition['category']> = ['tables', 'charts', 'operations'];
-const categoryLabels: Record<NodeDefinition['category'], string> = {
+const categoryOrder: Array<WidgetDefinition['category']> = ['tables', 'charts', 'operations'];
+const categoryLabels: Record<WidgetDefinition['category'], string> = {
   tables: 'Tables',
   charts: 'Charts',
   operations: 'Operations',
@@ -60,7 +60,7 @@ const NodeLibrary: React.FC<NodeLibraryProps> = ({
       <div className="ne-library-collapsible">
         <div className="ne-library-sections">
         {categoryOrder.map((category) => {
-          const nodes = nodeDefinitions.filter((node) => node.category === category);
+          const nodes = widgetDefinitions.filter((node) => node.category === category);
           if (!nodes.length) return null;
 
           return (

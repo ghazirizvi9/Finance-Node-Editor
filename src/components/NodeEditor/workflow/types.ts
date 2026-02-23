@@ -6,7 +6,6 @@ export type WorkspaceView = 'canvas' | 'workflows';
 export type FinanceNodeType =
   | 'start'
   | 'parentTable'
-  | 'childTable'
   | 'verticalBarChart'
   | 'horizontalBarChart'
   | 'pieChart'
@@ -30,7 +29,6 @@ export interface ColumnConfig {
 export interface ParentTableRow {
   id: string;
   name: string;
-  childNodeId: string;
   headerColor: string;
   subheaderColor: string;
   /** Column-keyed cell data */
@@ -57,16 +55,7 @@ export interface ParentTableNodeData extends BaseFinanceNodeData {
   rows: ParentTableRow[];
 }
 
-export interface ChildTableNodeData extends BaseFinanceNodeData {
-  kind: 'childTable';
-  parentNodeId: string;
-  rowId: string;
-  headerColor: string;
-  subheaderColor: string;
-  columns: string[];
-}
-
-export type FinanceWidgetKind = Exclude<FinanceNodeType, 'start' | 'parentTable' | 'childTable'>;
+export type FinanceWidgetKind = Exclude<FinanceNodeType, 'start' | 'parentTable'>;
 
 export interface WidgetNodeData extends BaseFinanceNodeData {
   kind: 'widget';
@@ -81,17 +70,14 @@ export interface WidgetNodeData extends BaseFinanceNodeData {
 export type FinanceNodeData =
   | StartNodeData
   | ParentTableNodeData
-  | ChildTableNodeData
   | WidgetNodeData;
 
 export type FinanceFlowNode = Node<FinanceNodeData, FinanceNodeType>;
 export type StartFlowNode = Node<StartNodeData, 'start'>;
-export type ParentTableFlowNode = Node<ParentTableNodeData, 'parentTable'>;
 export type ParentTableRuntimeFlowNode = Node<ParentTableNodeRuntimeData, 'parentTable'>;
-export type ChildTableFlowNode = Node<ChildTableNodeData, 'childTable'>;
 export type WidgetFlowNode = Node<
   WidgetNodeData,
-  Exclude<FinanceNodeType, 'start' | 'parentTable' | 'childTable'>
+  Exclude<FinanceNodeType, 'start' | 'parentTable'>
 >;
 
 export interface WorkflowGraph {
@@ -123,6 +109,4 @@ export function isParentTableNode(node: FinanceFlowNode): node is FinanceFlowNod
   return node.type === 'parentTable' && node.data.kind === 'parentTable';
 }
 
-export function isChildTableNode(node: FinanceFlowNode): node is FinanceFlowNode & { data: ChildTableNodeData } {
-  return node.type === 'childTable' && node.data.kind === 'childTable';
-}
+

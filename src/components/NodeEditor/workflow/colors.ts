@@ -1,4 +1,4 @@
-export const CHILD_TABLE_PALETTE = [
+export const ROW_COLOR_PALETTE = [
   '#3b82f6',
   '#14b8a6',
   '#f97316',
@@ -32,7 +32,7 @@ function rgbToHex(r: number, g: number, b: number): string {
   return `#${toHex(clamp(Math.round(r), 0, 255))}${toHex(clamp(Math.round(g), 0, 255))}${toHex(clamp(Math.round(b), 0, 255))}`;
 }
 
-export function lightenHex(hex: string, ratio: number): string {
+function lightenHex(hex: string, ratio: number): string {
   const { r, g, b } = hexToRgb(hex);
   const mix = clamp(ratio, 0, 1);
   return rgbToHex(
@@ -42,8 +42,8 @@ export function lightenHex(hex: string, ratio: number): string {
   );
 }
 
-export function getChildTableColors(index: number): { headerColor: string; subheaderColor: string } {
-  const headerColor = CHILD_TABLE_PALETTE[index % CHILD_TABLE_PALETTE.length];
+export function getRowColors(index: number): { headerColor: string; subheaderColor: string } {
+  const headerColor = ROW_COLOR_PALETTE[index % ROW_COLOR_PALETTE.length];
   const subheaderColor = lightenHex(headerColor, 0.32);
   return { headerColor, subheaderColor };
 }

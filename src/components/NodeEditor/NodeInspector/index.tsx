@@ -20,7 +20,7 @@ const NodeInspector: React.FC<NodeInspectorProps> = ({
   const isChart = selectedNode.type.includes('Chart') || selectedNode.type === 'pieChart' || selectedNode.type === 'trendLine';
   const isOperation = selectedNode.type === 'filter' || selectedNode.type === 'calculate';
   const isParent = selectedNode.type === 'parentTable';
-  const isTable = selectedNode.type.includes('Table') || selectedNode.type === 'childTable';
+  const isTable = selectedNode.type.includes('Table');
 
   return (
     <aside className="ne-node-inspector" aria-label="Node configuration panel">

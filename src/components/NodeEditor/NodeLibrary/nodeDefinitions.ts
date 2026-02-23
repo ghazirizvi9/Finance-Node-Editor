@@ -1,6 +1,6 @@
 import type { FinanceNodeType, LibraryCategory } from '../workflow/types';
 
-export interface NodeDefinition {
+export interface WidgetDefinition {
   type: FinanceNodeType;
   name: string;
   description: string;
@@ -9,7 +9,7 @@ export interface NodeDefinition {
   accent: 'blue' | 'purple' | 'orange' | 'pink' | 'green' | 'indigo' | 'red' | 'teal';
 }
 
-export const nodeDefinitions: NodeDefinition[] = [
+export const widgetDefinitions: WidgetDefinition[] = [
   { type: 'parentTable', name: 'Parent Table', description: 'Generates child tables from rows', icon: '◫', category: 'tables', accent: 'blue' },
 
   { type: 'verticalBarChart', name: 'Vertical Bar Chart', description: 'Compare categories with vertical bars', icon: '▥', category: 'charts', accent: 'orange' },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { ColumnConfig, ParentTableRuntimeFlowNode } from '../../../workflow/types';
 
@@ -27,16 +27,11 @@ function computeTotal(columnId: string, rows: ParentTableRuntimeFlowNode['data']
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, data, selected }) => {
-  const [draftRow, setDraftRow] = useState('');
-
   const columns: ColumnConfig[] = data.columns ?? [];
   const rows = data.rows ?? [];
 
   const handleAddRow = () => {
-    const name = draftRow.trim();
-    if (!name || !data.onAddRow) return;
-    data.onAddRow(id, name);
-    setDraftRow('');
+    data.onAddRow?.(id, 'New Row');
   };
 
   const handleAddColumn = () => {
@@ -50,7 +45,7 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
     data.onAddColumn?.(id, col);
   };
 
-  const colCount = columns.length + 2; // row-label col + actions col
+  const colCount = columns.length + 1; // data cols + actions col
 
   return (
     <div
@@ -61,26 +56,13 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
 
       <div className="ne-node-card-shell">
 
-        {/* ── Title bar ───────────────────────────────────────────────────── */}
-        <div className="ne-node-card-header">
-          <div
-            className="ne-node-icon-bubble ne-icon-circle"
-            style={{ background: data.accentColor, color: '#fff' }}
-          >
+        {/* ── Table title (drag handle) ─────────────────────────────────── */}
+        <div className="ne-pt-title-row" style={{ borderTop: `3px solid ${data.accentColor ?? '#3b82f6'}` }}>
+          <span className="ne-pt-title-icon" style={{ background: data.accentColor ?? '#3b82f6' }}>
             {data.icon}
-          </div>
-          <div className="ne-node-header-copy">
-            <div className="ne-node-title-row">
-              <span className="ne-node-title">{data.label}</span>
-              <span className="ne-node-badge">{rows.length} rows</span>
-              {typeof data.executionOrder === 'number' && (
-                <span className={`ne-execution-badge ${data.executionState ?? 'idle'}`}>
-                  {data.executionOrder}
-                </span>
-              )}
-            </div>
-            <div className="ne-node-subtitle">{data.subtitle}</div>
-          </div>
+          </span>
+          <span className="ne-pt-title-label">{data.label}</span>
+          <span className="ne-pt-title-badge">{rows.length} {rows.length === 1 ? 'row' : 'rows'}</span>
         </div>
 
         {/* ── Spreadsheet ──────────────────────────────────────────────────── */}
@@ -90,7 +72,6 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
 
               {/* Column header row */}
               <tr>
-                <th className="ne-pt-th ne-pt-row-label-th">Category</th>
                 {columns.map((col) => (
                   <th
                     key={col.id}
@@ -138,73 +119,36 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
                 </th>
               </tr>
 
-              {/* Sub-header row */}
-              <tr>
-                <th className="ne-pt-sub-th ne-pt-row-label-th" />
-                {columns.map((col) => (
-                  <th
-                    key={col.id}
-                    className="ne-pt-sub-th"
-                    style={{ background: col.subheaderColor + '22', borderBottom: `2px solid ${col.subheaderColor}` }}
-                  >
-                    <div className="ne-pt-header-cell">
-                      <input
-                        className="ne-pt-col-input nodrag nopan"
-                        value={col.subheader}
-                        onChange={(e) => data.onUpdateColumn?.(id, col.id, { subheader: e.target.value })}
-                        aria-label="Column sub-header"
-                      />
-                      <label className="ne-pt-color-swatch small" title="Sub-header colour">
-                        <span style={{ background: col.subheaderColor }} />
-                        <input
-                          type="color"
-                          className="nodrag nopan"
-                          value={col.subheaderColor}
-                          onChange={(e) => data.onUpdateColumn?.(id, col.id, { subheaderColor: e.target.value })}
-                        />
-                      </label>
-                    </div>
-                  </th>
-                ))}
-                <th className="ne-pt-sub-th" />
-              </tr>
-
             </thead>
 
             <tbody>
               {rows.length === 0 ? (
                 <tr>
                   <td className="ne-pt-empty" colSpan={colCount}>
-                    Add a row below — each row auto-generates a linked child table.
+                    No rows yet — click + Add Row to get started.
                   </td>
                 </tr>
               ) : (
                 rows.map((row) => (
                   <tr key={row.id} className="ne-pt-data-row">
-                    {/* Row label cell */}
-                    <td className="ne-pt-td ne-pt-row-label-td">
-                      <span
-                        className="ne-color-dot"
-                        style={{ background: row.headerColor }}
-                        aria-hidden="true"
-                      />
-                      <input
-                        className="ne-pt-row-name-input nodrag nopan"
-                        value={row.name}
-                        onChange={(e) => data.onRenameRow?.(id, row.id, e.target.value)}
-                        aria-label="Row name"
-                      />
-                    </td>
-
                     {/* Data cells */}
-                    {columns.map((col) => (
+                    {columns.map((col, colIdx) => (
                       <td key={col.id} className="ne-pt-td">
-                        <input
-                          className="ne-pt-cell-input nodrag nopan"
-                          value={row.cells?.[col.id] ?? ''}
-                          onChange={(e) => data.onUpdateCell?.(id, row.id, col.id, e.target.value)}
-                          placeholder="—"
-                        />
+                        {colIdx === 0 ? (
+                          <input
+                            className="ne-pt-row-name-input nodrag nopan"
+                            value={row.cells?.[col.id] ?? ''}
+                            onChange={(e) => data.onUpdateCell?.(id, row.id, col.id, e.target.value)}
+                            placeholder={row.name || '—'}
+                          />
+                        ) : (
+                          <input
+                            className="ne-pt-cell-input nodrag nopan"
+                            value={row.cells?.[col.id] ?? ''}
+                            onChange={(e) => data.onUpdateCell?.(id, row.id, col.id, e.target.value)}
+                            placeholder="—"
+                          />
+                        )}
                       </td>
                     ))}
 
@@ -213,10 +157,7 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
                       <button
                         type="button"
                         className="ne-pt-del-btn nodrag nopan"
-                        onClick={() => {
-                          const ok = window.confirm(`Delete row "${row.name}" and its child table?`);
-                          if (ok) data.onDeleteRow?.(id, row.id);
-                        }}
+                        onClick={() => data.onDeleteRow?.(id, row.id)}
                         title="Delete row"
                         aria-label={`Delete ${row.name}`}
                       >
@@ -228,42 +169,35 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
               )}
             </tbody>
 
-            {/* Totals footer */}
-            {rows.length > 0 && (
-              <tfoot>
+            {/* Footer with add-row button then totals */}
+            <tfoot>
+              <tr className="ne-pt-data-row">
+                {columns.map((_, colIdx) => (
+                  <td key={colIdx} className="ne-pt-td" />
+                ))}
+                <td className="ne-pt-td ne-pt-add-row-cell">
+                  <button
+                    type="button"
+                    className="ne-pt-add-col-btn nodrag nopan"
+                    onClick={handleAddRow}
+                    title="Add row"
+                  >
+                    +
+                  </button>
+                </td>
+              </tr>
+              {rows.length > 0 && (
                 <tr className="ne-pt-totals-row">
-                  <td className="ne-pt-footer-td ne-pt-row-label-td">Totals</td>
-                  {columns.map((col) => (
+                  {columns.map((col, colIdx) => (
                     <td key={col.id} className="ne-pt-footer-td">
-                      {computeTotal(col.id, rows)}
+                      {colIdx === 0 ? 'Totals' : computeTotal(col.id, rows)}
                     </td>
                   ))}
                   <td className="ne-pt-footer-td" />
                 </tr>
-              </tfoot>
-            )}
+              )}
+            </tfoot>
           </table>
-        </div>
-
-        {/* ── Add row ──────────────────────────────────────────────────────── */}
-        <div className="ne-parent-add-row">
-          <input
-            className="ne-add-row-input nodrag nopan"
-            value={draftRow}
-            onChange={(e) => setDraftRow(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') { e.preventDefault(); handleAddRow(); }
-            }}
-            placeholder="Add row (e.g. Savings, Investments…)"
-            aria-label="New row name"
-          />
-          <button
-            type="button"
-            className="ne-add-row-btn nodrag nopan"
-            onClick={handleAddRow}
-          >
-            + Add Row
-          </button>
         </div>
 
       </div>

@@ -1,6 +1,5 @@
 import type { XYPosition } from '@xyflow/react';
 import type {
-  ChildTableNodeData,
   ColumnConfig,
   FinanceFlowNode,
   FinanceNodeType,
@@ -68,30 +67,6 @@ export function createParentTableNode(position: XYPosition = { x: 420, y: 180 })
   };
 
   return baseNode(nextId('parentTable'), 'parentTable', position, data);
-}
-
-export function createChildTableNode(params: {
-  position: XYPosition;
-  label: string;
-  parentNodeId: string;
-  rowId: string;
-  headerColor: string;
-  subheaderColor: string;
-}): FinanceFlowNode {
-  const data: ChildTableNodeData = {
-    kind: 'childTable',
-    label: params.label,
-    subtitle: 'Child table from parent row',
-    icon: 'CT',
-    accentColor: params.headerColor,
-    parentNodeId: params.parentNodeId,
-    rowId: params.rowId,
-    headerColor: params.headerColor,
-    subheaderColor: params.subheaderColor,
-    columns: ['Budget', 'Actual', 'Diff'],
-  };
-
-  return baseNode(nextId('childTable'), 'childTable', params.position, data);
 }
 
 function createWidgetData(type: FinanceWidgetKind): WidgetNodeData {
@@ -225,16 +200,6 @@ export function createWidgetNode(type: FinanceWidgetKind, position: XYPosition):
 export function createNodeFromLibrary(type: FinanceNodeType, position: XYPosition): FinanceFlowNode | null {
   if (type === 'start') return createStartNode(position);
   if (type === 'parentTable') return createParentTableNode(position);
-  if (type === 'childTable') {
-    return createChildTableNode({
-      position,
-      label: 'Child Table',
-      parentNodeId: 'manual',
-      rowId: nextId('row'),
-      headerColor: '#8b5cf6',
-      subheaderColor: '#c4b5fd',
-    });
-  }
 
   return createWidgetNode(type, position);
 }
