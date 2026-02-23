@@ -753,8 +753,8 @@ const NodeEditor: React.FC = () => {
                 onPaneContextMenu={onPaneContextMenu}
                 onNodeContextMenu={onNodeContextMenu}
                 nodeTypes={nodeTypes}
-                snapToGrid
-                snapGrid={[16, 16]}
+                snapToGrid={false}
+                snapGrid={[1, 1]}
                 connectionLineType={ConnectionLineType.Bezier}
                 defaultEdgeOptions={{
                   type: 'bezier',

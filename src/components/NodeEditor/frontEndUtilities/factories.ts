@@ -66,7 +66,7 @@ export function createParentTableNode(position: XYPosition = { x: 420, y: 180 })
     rows: [],
   };
 
-  return baseNode(nextId('parentTable'), 'parentTable', position, data);
+  return baseNode(nextId('parentTable'), 'parentTable', position, data, { width: 700, height: 320 });
 }
 
 function createWidgetData(type: FinanceWidgetKind): WidgetNodeData {
