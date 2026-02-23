@@ -1,6 +1,6 @@
 import React from 'react';
 import type { NodeProps } from '@xyflow/react';
-import type { WidgetFlowNode } from '../../../workflow/types';
+import type { WidgetFlowNode } from '../../../../frontEndUtilities/types';
 import WidgetNode from '../../common/WidgetNode';
 
 const IncomeNode: React.FC<NodeProps<WidgetFlowNode>> = (props) => (

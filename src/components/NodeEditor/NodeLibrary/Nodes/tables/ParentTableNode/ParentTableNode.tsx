@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import type { ColumnConfig, ParentTableRuntimeFlowNode } from '../../../workflow/types';
+import type { ColumnConfig, ParentTableRuntimeFlowNode } from '../../../../frontEndUtilities/types';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

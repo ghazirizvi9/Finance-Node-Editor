@@ -1,4 +1,4 @@
-import type { FinanceNodeType, LibraryCategory } from '../workflow/types';
+import type { FinanceNodeType, LibraryCategory } from '../frontEndUtilities/types';
 
 export interface WidgetDefinition {
   type: FinanceNodeType;

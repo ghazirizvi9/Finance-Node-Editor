@@ -19,29 +19,29 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import BottomToolbar from './BottomToolbar';
-import NodeInspector from './NodeInspector';
+import NodeInspector from './Modal';
 import NodeLibrary from './NodeLibrary';
-import TopBar from './TopBar';
-import { useCanvasInteractions, type CanvasContextMenuState } from './mouseClicks/useCanvasInteractions';
+import TopBar from './Header';
+import { useCanvasInteractions, type CanvasContextMenuState } from './mouseClicks/mouse';
 
 // Node components - organized by category
-import StartNode from './Nodes/StartNode/StartNode';
+import StartNode from './NodeLibrary/Nodes/StartNode/StartNode';
 // Tables
-import ParentTableNode from './Nodes/tables/ParentTableNode/ParentTableNode';
+import ParentTableNode from './NodeLibrary/Nodes/tables/ParentTableNode/ParentTableNode';
 // Charts
-import VerticalBarChartNode from './Nodes/charts/VerticalBarChart';
-import HorizontalBarChartNode from './Nodes/charts/HorizontalBarChart';
-import PieChartNode from './Nodes/charts/PieChart';
-import TrendLineNode from './Nodes/charts/TrendLine';
+import VerticalBarChartNode from './NodeLibrary/Nodes/charts/VerticalBarChart';
+import HorizontalBarChartNode from './NodeLibrary/Nodes/charts/HorizontalBarChart';
+import PieChartNode from './NodeLibrary/Nodes/charts/PieChart';
+import TrendLineNode from './NodeLibrary/Nodes/charts/TrendLine';
 // Operations
-import CalculateNode from './Nodes/operations/Calculate';
-import FilterNode from './Nodes/operations/Filter';
-import IncomeNode from './Nodes/operations/Income';
-import ExpenseNode from './Nodes/operations/Expense';
-import BalanceNode from './Nodes/operations/Balance';
+import CalculateNode from './NodeLibrary/Nodes/operations/Calculate';
+import FilterNode from './NodeLibrary/Nodes/operations/Filter';
+import IncomeNode from './NodeLibrary/Nodes/operations/Income';
+import ExpenseNode from './NodeLibrary/Nodes/operations/Expense';
+import BalanceNode from './NodeLibrary/Nodes/operations/Balance';
 import './NodeEditor.css';
-import { cloneWorkflowGraph } from './workflow/graphUtils';
-import { createEmptyWorkflowGraph } from './workflow/factories';
+import { cloneWorkflowGraph } from './frontEndUtilities/graphUtils';
+import { createEmptyWorkflowGraph } from './frontEndUtilities/factories';
 import {
   addParentRow,
   deleteParentRow,
@@ -50,15 +50,15 @@ import {
   addParentTableColumn,
   updateParentTableColumn,
   deleteParentTableColumn,
-} from './workflow/parentTableOperations';
-import { workflowDirectoryItems } from './workflow/templates';
+} from './frontEndUtilities/parentTableOperations';
+import { workflowDirectoryItems } from './frontEndUtilities/templates';
 import type {
   EditorTheme,
   FinanceFlowNode,
   ParentTableNodeRuntimeData,
   WorkspaceView,
   WorkflowGraph,
-} from './workflow/types';
+} from './frontEndUtilities/types';
 
 const nodeTypes = {
   start: StartNode,

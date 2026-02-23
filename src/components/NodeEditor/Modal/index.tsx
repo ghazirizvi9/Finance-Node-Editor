@@ -1,5 +1,5 @@
 import React from 'react';
-import type { FinanceFlowNode } from '../workflow/types';
+import type { FinanceFlowNode } from '../frontEndUtilities/types';
 
 interface NodeInspectorProps {
   selectedNode: FinanceFlowNode;

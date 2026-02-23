@@ -1,5 +1,5 @@
 import React from 'react';
-import type { EditorTheme } from '../workflow/types';
+import type { EditorTheme } from '../frontEndUtilities/types';
 
 interface BottomToolbarProps {
   canUndo: boolean;

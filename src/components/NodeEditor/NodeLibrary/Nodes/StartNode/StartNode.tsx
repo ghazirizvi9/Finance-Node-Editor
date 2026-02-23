@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import type { StartFlowNode } from '../../workflow/types';
+import type { StartFlowNode } from '../../../frontEndUtilities/types';
 
 const StartNode: React.FC<NodeProps<StartFlowNode>> = ({ data }) => {
   return (

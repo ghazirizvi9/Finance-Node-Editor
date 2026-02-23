@@ -21,9 +21,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { Node, ReactFlowInstance, Viewport } from '@xyflow/react';
-import { createNodeFromLibrary } from '../workflow/factories';
-import { cloneWorkflowGraph } from '../workflow/graphUtils';
-import type { FinanceFlowNode, WorkflowGraph } from '../workflow/types';
+import { createNodeFromLibrary } from '../frontEndUtilities/factories';
+import { cloneWorkflowGraph } from '../frontEndUtilities/graphUtils';
+import type { FinanceFlowNode, WorkflowGraph } from '../frontEndUtilities/types';
 
 // ─── Public types ────────────────────────────────────────────────────────────
 

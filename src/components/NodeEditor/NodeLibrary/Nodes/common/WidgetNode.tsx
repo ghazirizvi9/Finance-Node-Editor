@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import type { WidgetFlowNode } from '../../workflow/types';
+import type { WidgetFlowNode } from '../../../frontEndUtilities/types';
 
 const tablePreviewRows = [
   ['Groceries', '$420', 'Needs'],
