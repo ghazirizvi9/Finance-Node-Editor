@@ -20,26 +20,26 @@ import '@xyflow/react/dist/style.css';
 
 import BottomToolbar from './BottomToolbar';
 import NodeInspector from './Modal';
-import NodeLibrary from './NodeLibrary';
+import NodeLibrary from './WidgetLibrary';
 import TopBar from './Header';
-import { useCanvasInteractions, type CanvasContextMenuState } from './mouseClicks/mouse';
+import { useCanvasInteractions, type CanvasContextMenuState } from './mouseFunctions/mouse';
 
 // Node components - organized by category
-import StartNode from './NodeLibrary/Nodes/StartNode/StartNode';
+import StartNode from './WidgetLibrary/Nodes/StartNode/StartNode';
 // Tables
-import ParentTableNode from './NodeLibrary/Nodes/tables/ParentTableNode/ParentTableNode';
+import ParentTableNode from './WidgetLibrary/Nodes/tables/ParentTableNode/ParentTableNode';
 // Charts
-import VerticalBarChartNode from './NodeLibrary/Nodes/charts/VerticalBarChart';
-import HorizontalBarChartNode from './NodeLibrary/Nodes/charts/HorizontalBarChart';
-import PieChartNode from './NodeLibrary/Nodes/charts/PieChart';
-import TrendLineNode from './NodeLibrary/Nodes/charts/TrendLine';
+import VerticalBarChartNode from './WidgetLibrary/Nodes/charts/VerticalBarChart';
+import HorizontalBarChartNode from './WidgetLibrary/Nodes/charts/HorizontalBarChart';
+import PieChartNode from './WidgetLibrary/Nodes/charts/PieChart';
+import TrendLineNode from './WidgetLibrary/Nodes/charts/TrendLine';
 // Operations
-import CalculateNode from './NodeLibrary/Nodes/operations/Calculate';
-import FilterNode from './NodeLibrary/Nodes/operations/Filter';
-import IncomeNode from './NodeLibrary/Nodes/operations/Income';
-import ExpenseNode from './NodeLibrary/Nodes/operations/Expense';
-import BalanceNode from './NodeLibrary/Nodes/operations/Balance';
-import './NodeEditor.css';
+import CalculateNode from './WidgetLibrary/Nodes/operations/Calculate';
+import FilterNode from './WidgetLibrary/Nodes/operations/Filter';
+import IncomeNode from './WidgetLibrary/Nodes/operations/Income';
+import ExpenseNode from './WidgetLibrary/Nodes/operations/Expense';
+import BalanceNode from './WidgetLibrary/Nodes/operations/Balance';
+import './WorkflowDashboard.css';
 import { cloneWorkflowGraph } from './frontEndUtilities/graphUtils';
 import { createEmptyWorkflowGraph } from './frontEndUtilities/factories';
 import {

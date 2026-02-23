@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, NodeResizer, type NodeProps } from '@xyflow/react';
 import type { ColumnConfig, ParentTableRuntimeFlowNode } from '../../../../frontEndUtilities/types';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -50,11 +50,25 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
   return (
     <div
       className={`ne-flow-node ne-parent-table-node ${selected ? 'is-selected' : ''}`}
-      style={{ minWidth: Math.max(480, 200 + columns.length * 160) }}
+      style={{ width: '100%', height: '100%', minWidth: Math.max(480, 200 + columns.length * 160) }}
     >
+      <NodeResizer
+        minWidth={Math.max(480, 200 + columns.length * 160)}
+        minHeight={180}
+        isVisible={selected}
+        lineClassName="ne-resize-line"
+        handleClassName="ne-resize-handle"
+      />
       <Handle id="table-in" type="target" position={Position.Left} className="ne-handle" />
 
-      <div className="ne-node-card-shell">
+      {/* Draggable top bar */}
+      <div className="ne-pt-drag-zone ne-pt-drag-zone-top" />
+
+      <div className="ne-pt-drag-middle">
+        {/* Draggable left wall */}
+        <div className="ne-pt-drag-zone ne-pt-drag-zone-side" />
+
+        <div className="ne-node-card-shell">
 
         {/* ── Table title (drag handle) ─────────────────────────────────── */}
         <div className="ne-pt-title-row" style={{ borderTop: `3px solid ${data.accentColor ?? '#3b82f6'}` }}>
@@ -201,6 +215,13 @@ const ParentTableNode: React.FC<NodeProps<ParentTableRuntimeFlowNode>> = ({ id, 
         </div>
 
       </div>
+
+        {/* Draggable right wall */}
+        <div className="ne-pt-drag-zone ne-pt-drag-zone-side" />
+      </div>
+
+      {/* Draggable bottom bar */}
+      <div className="ne-pt-drag-zone ne-pt-drag-zone-bottom" />
 
       <Handle id="table-out" type="source" position={Position.Right} className="ne-handle ne-handle-accent" />
       <Handle id="table-out-bottom" type="source" position={Position.Bottom} className="ne-handle" />
